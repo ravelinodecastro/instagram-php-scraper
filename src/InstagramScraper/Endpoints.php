@@ -51,6 +51,18 @@ class Endpoints
     /**
      * @param int $count
      */
+
+    public function setMethods($methods)
+    {
+        return $this->proxyAllowedMethods = array_merge($this->proxyAllowedMethods, $methods);
+    }
+    public static function useProxyApi($url)
+    {
+        if ($this->proxyApiUrl){
+            return str_replace('{instagram_url}', $url, $this->proxyApiUrl);
+        }
+        return $url;
+    }
     public static function setAccountMediasRequestCount($count)
     {
         static::$requestMediaCount = $count;
@@ -63,7 +75,7 @@ class Endpoints
 
     public static function getAccountPageLink($username)
     {
-        return str_replace('{username}', urlencode($username), static::ACCOUNT_PAGE);
+        return self::useProxyApi(str_replace('{username}', urlencode($username), static::ACCOUNT_PAGE));
     }
 
     public static function getAccountJsonLink($username)
@@ -78,12 +90,12 @@ class Endpoints
 
     public static function getAccountJsonPrivateInfoLinkByAccountId($id)
     {
-        return str_replace('{userId}', urlencode($id), static::ACCOUNT_JSON_PRIVATE_INFO_BY_ID_2);
+        return self::useProxyApi(str_replace('{userId}', urlencode($id), static::ACCOUNT_JSON_PRIVATE_INFO_BY_ID_2));
     }
 
     public static function getAccountMediasJsonLink($variables)
     {
-        return str_replace('{variables}', urlencode($variables), static::ACCOUNT_MEDIAS);
+        return self::useProxyApi(str_replace('{variables}', urlencode($variables), static::ACCOUNT_MEDIAS));
     }
 
     public static function getMediaPageLink($code)
@@ -99,13 +111,13 @@ class Endpoints
     public static function getMediasJsonByLocationIdLink($facebookLocationId, $maxId = '')
     {
         $url = str_replace('{{facebookLocationId}}', urlencode($facebookLocationId), static::MEDIA_JSON_BY_LOCATION_ID);
-        return str_replace('{{maxId}}', urlencode($maxId), $url);
+        return self::useProxyApi(str_replace('{{maxId}}', urlencode($maxId), $url));
     }
 
     public static function getMediasJsonByTagLink($tag, $maxId = '')
     {
         $url = str_replace('{tag}', urlencode($tag), static::MEDIA_JSON_BY_TAG);
-        return str_replace('{max_id}', urlencode($maxId), $url);
+        return self::useProxyApi(str_replace('{max_id}', urlencode($maxId), $url));
     }
 
     public static function getGeneralSearchJsonLink($query, $count = 10)

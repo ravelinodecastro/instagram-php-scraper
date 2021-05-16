@@ -57,6 +57,9 @@ class Instagram
     protected $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36';
     protected $customCookies = null;
 
+    private $proxyApiUrl = null;
+    private $headers = [];
+
     /**
      * Instagram constructor.
      * @param ClientInterface $client
@@ -82,6 +85,23 @@ class Instagram
      *
      * @return Instagram
      */
+    public function setProxyApiUrl($url)
+    {
+        return $this->proxyApiUrl = $url;
+    }
+    public function getProxyApiUrl()
+    {
+        return $this->proxyApiUrl;
+    }
+    public function clearProxyApiUrl()
+    {
+        return $this->proxyApiUrl=null;
+    }
+    public function setHeaders($headers)
+    {
+        return $this->headers = $headers;
+    }
+    
     public static function withCredentials(ClientInterface $client, $username, $password, $cache)
     {
         static::$instanceCache = $cache;
@@ -213,11 +233,11 @@ class Instagram
 
             $csrf = empty($session['csrftoken']) ? $session['x-csrftoken'] : $session['csrftoken'];
 
-            $headers = [
+            $headers = array_merge([
                 'cookie' => $cookies,
                 'referer' => Endpoints::BASE_URL . '/',
                 'x-csrftoken' => $csrf,
-            ];
+            ], $this->headers);
 
         }
 
